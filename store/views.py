@@ -15,7 +15,8 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     order, created = Order.objects.get_or_create(completed=False)
     order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
-    order_item.quantity += 1
+    if not created:
+        order_item.quantity += 1
     order_item.save()
     return redirect('cart_detail')
 
@@ -35,3 +36,9 @@ def update_cart(request, item_id):
         else:
             order_item.delete()
     return redirect('cart_detail')
+
+def checkout(request):
+    order, created = Order.objects.get_or_create(completed=False)
+    order.completed = True
+    order.save()
+    return render(request, 'checkout.html', {'order': order})

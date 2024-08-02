@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4">
+    <h1 class="text-2xl font-bold mb-4">Checkout</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        {% if order.items.all %}
+            <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+            <ul>
+                {% for item in order.items.all %}
+                <li class="flex items-center justify-between py-2 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="h-16 w-16 object-cover mr-4">
+                        <div>
+                            <h3 class="text-lg font-semibold">{{ item.product.name }}</h3>
+                            <p class="text-gray-700">${{ item.product.price }} x {{ item.quantity }}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-900 font-semibold">${{ item.get_total_price }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="flex justify-between items-center mt-6 border-t border-gray-200 pt-4">
+                <h2 class="text-lg font-semibold">Total:</h2>
+                <p class="text-2xl font-bold">${{ order.get_total_price }}</p>
+            </div>
+            <div class="mt-6">
+                <form method="POST" action="{% url 'checkout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700">Place Order</button>
+                </form>
+            </div>
+        {% else %}
+            <p class="text-gray-700">Your cart is empty. <a href="{% url 'product_list' %}" class="text-indigo-600 hover:text-indigo-800">Continue Shopping</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
