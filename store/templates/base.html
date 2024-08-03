@@ -7,21 +7,67 @@
     <title>{% block title %}Ecommerce{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <nav>
-        <ul>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-lg font-bold">My Ecommerce</div>
+            <div class="hidden md:flex space-x-4">
+                {%if request.path == '/'%}
+                <form method="get" class="mb-6">
+                    
+                    <input type="text" name="query" maxlength="255" required="" id="id_query" class="border-2 rounded-xl">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+                </form>
+                {% endif %}
+                <a href="{% url 'product_list' %}" class="text-gray-700 hover:text-blue-500">Home</a>
+                <a href="{% url 'product_list' %}" class="text-gray-700 hover:text-blue-500">Products</a>
+                <a href="{% url 'cart_detail' %}" class="text-gray-700 hover:text-blue-500">Cart</a>
+                {% if user.is_authenticated %}
+                    <p>{{user.username}}</p>
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {%csrf_token%}
+                        <button type="submit" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'account_login' %}" class="text-gray-700 hover:text-blue-500">Login</a>
+                    <a href="{% url 'account_signup' %}" class="text-gray-700 hover:text-blue-500">Sign Up</a>
+                {% endif %}
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="{% url 'product_list' %}" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Home</a>
+            <a href="{% url 'product_list' %}" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Products</a>
+            <a href="{% url 'cart_detail' %}" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Cart</a>
             {% if user.is_authenticated %}
-                <li><a href="{% url 'account_logout' %}">Logout</a></li>
+                
+               
+                <form method="post" action="{% url 'account_logout' %}">
+                    {%csrf_token%}
+                    <button type="submit" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Logout1</button>
+                </form>
             {% else %}
-                <li><a href="{% url 'account_login' %}">Login</a></li>
-                <li><a href="{% provider_login_url 'google' %}">Login with Google</a></li>
-
+                <a href="{% url 'account_login' %}" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Login</a>
+                <a href="{% url 'account_signup' %}" class="block text-gray-700 px-4 py-2 hover:bg-gray-200">Sign Up</a>
+               
             {% endif %}
-        </ul>
+        </div>
     </nav>
     <div class="container mx-auto px-4">
         {% block content %}
         {% endblock %}
     </div>
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            var menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>

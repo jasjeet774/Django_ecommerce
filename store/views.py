@@ -1,10 +1,22 @@
-from django.shortcuts import render, get_object_or_404 ,redirect
+from django.shortcuts import render, get_object_or_404 ,redirect,HttpResponseRedirect
 from .models import Product,Order,OrderItem
+from .forms import SearchForm
+
 # Create your views here.
 
+
 def product_list(request):
-    products=Product.objects.all()
-    return render(request , 'product_list.html',{'products':products})
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Product.objects.filter(name__icontains=query)
+    else:
+        results = Product.objects.all()
+    return render(request, 'product_list.html', {'form': form, 'query': query, 'results': results})
 
 def product_detail(request,id):
     product=get_object_or_404(Product,id=id)
